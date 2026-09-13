@@ -1,0 +1,4869 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Pledge Card</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink: #101B30;
+      --ink-2: #182747;
+      --paper: #FBF7EC;
+      --paper-2: #F3ECD9;
+      --gold: #B8873E;
+      --gold-dark: #8F6A2E;
+      --burgundy: #7A2A2E;
+      --line: #E4DCC5;
+      --text: #241E12;
+      --muted: #6B6455;
+      --error: #A23B2E;
+      --white: #ffffff;
+      --shadow: 0 20px 50px rgba(16, 27, 48, .12);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(184,135,62,.08), transparent 35%),
+        var(--paper);
+      color: var(--text);
+      font-family: "Work Sans", sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--ink);
+      color: white;
+      padding: 24px 20px;
+    }
+
+    .header-inner {
+      width: min(1100px, calc(100% - 30px));
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-family: "Fraunces", serif;
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    .brand small {
+      display: block;
+      font-family: "Work Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      opacity: .65;
+      margin-top: 3px;
+    }
+
+    .admin-trigger {
+      color: rgba(255,255,255,.75);
+      font-size: 12px;
+      border: 0;
+      background: transparent;
+      padding: 8px;
+    }
+
+    .admin-trigger:hover {
+      color: white;
+    }
+
+    main {
+      width: min(1100px, calc(100% - 30px));
+      margin: 40px auto 70px;
+    }
+
+    .public-wrap {
+      max-width: 760px;
+      margin: auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-family: "Fraunces", serif;
+      font-size: clamp(34px, 6vw, 54px);
+      line-height: 1.05;
+      color: var(--ink);
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 580px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .steps {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 30px;
+      gap: 10px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .step-number {
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      background: white;
+      font-weight: 700;
+    }
+
+    .step.active {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .step.active .step-number {
+      background: var(--gold);
+      color: white;
+      border-color: var(--gold);
+    }
+
+    .step-line {
+      width: 38px;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .panel {
+      background: rgba(255,255,255,.8);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .panel-title {
+      font-family: "Fraunces", serif;
+      color: var(--ink);
+      font-size: 25px;
+      margin: 0 0 8px;
+    }
+
+    .panel-description {
+      margin: 0 0 22px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .unavailable {
+      text-align: center;
+      padding: 55px 25px;
+    }
+
+    .unavailable-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      background: var(--paper-2);
+      color: var(--gold-dark);
+      font-size: 26px;
+    }
+
+    .dropzone {
+      border: 2px dashed #CFC5A9;
+      border-radius: 16px;
+      background: rgba(251,247,236,.65);
+      padding: 45px 22px;
+      text-align: center;
+      transition: .2s;
+    }
+
+    .dropzone.dragover {
+      border-color: var(--gold);
+      background: rgba(184,135,62,.08);
+    }
+
+    .upload-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--paper-2);
+      color: var(--gold-dark);
+      font-size: 25px;
+    }
+
+    .dropzone h3 {
+      margin: 0 0 7px;
+      color: var(--ink);
+      font-family: "Fraunces", serif;
+      font-size: 22px;
+    }
+
+    .dropzone p {
+      color: var(--muted);
+      margin: 0 0 18px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 19px;
+      font-weight: 700;
+      transition: .18s;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--ink-2);
+      transform: translateY(-1px);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: white;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .btn-danger {
+      background: var(--burgundy);
+      color: white;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .thumb-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 18px;
+      padding: 12px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .thumb-row img {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 9px;
+      background: var(--paper-2);
+    }
+
+    .thumb-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .thumb-name {
+      font-weight: 700;
+      color: var(--ink);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .thumb-size {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .error {
+      margin-top: 12px;
+      color: var(--error);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .result {
+      text-align: center;
+    }
+
+    .result-canvas-wrap {
+      width: 100%;
+      overflow: auto;
+      background: var(--paper-2);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 20px 0;
+    }
+
+    #resultCanvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: auto;
+      box-shadow: 0 10px 35px rgba(0,0,0,.15);
+    }
+
+    .generating {
+      text-align: center;
+      padding: 55px 20px;
+    }
+
+    .spinner {
+      width: 38px;
+      height: 38px;
+      border: 4px solid var(--line);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 17px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ADMIN */
+
+    .admin-wrap {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .admin-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .admin-title {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      color: var(--ink);
+      font-size: 34px;
+    }
+
+    .login-card {
+      max-width: 480px;
+      margin: 60px auto;
+    }
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184,135,62,.12);
+    }
+
+    .field input[type="range"] {
+      padding: 0;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 20px;
+    }
+
+    .status-badge {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--paper-2);
+      color: var(--gold-dark);
+    }
+
+    .status-badge.published {
+      background: #E7F3E8;
+      color: #276B35;
+    }
+
+    .status-badge.unpublished {
+      background: #F5E7E5;
+      color: var(--burgundy);
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+      gap: 22px;
+    }
+
+    .editor-card,
+    .settings-card {
+      background: rgba(255,255,255,.8);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .editor-title,
+    .settings-title {
+      font-family: "Fraunces", serif;
+      color: var(--ink);
+      font-size: 21px;
+      margin: 0 0 7px;
+    }
+
+    .editor-description {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 0 0 17px;
+    }
+
+    .editor-canvas-wrap {
+      position: relative;
+      overflow: auto;
+      background:
+        repeating-conic-gradient(#eee 0 25%, #fff 0 50%) 50% / 20px 20px;
+      border-radius: 12px;
+      min-height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #editorImg {
+      display: block;
+      max-width: 100%;
+      max-height: 650px;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    #areaBox {
+      position: absolute;
+      border: 2px solid var(--gold);
+      background: rgba(184,135,62,.13);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.75);
+      cursor: move;
+      touch-action: none;
+      transition: border-radius .04s linear;
+    }
+
+    #areaHandle {
+      position: absolute;
+      right: -8px;
+      bottom: -8px;
+      width: 16px;
+      height: 16px;
+      background: var(--gold);
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: nwse-resize;
+      touch-action: none;
+    }
+
+    .coordinates {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .coordinates .field {
+      margin-bottom: 0;
+    }
+
+    .sample-frame {
+      margin-top: 20px;
+      padding: 13px;
+      background: var(--paper-2);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .sample-frame h4 {
+      margin: 0 0 10px;
+      color: var(--ink);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #sampleCanvas {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: auto;
+      box-shadow: 0 8px 25px rgba(0,0,0,.12);
+    }
+
+    .admin-save {
+      margin-top: 15px;
+      min-height: 22px;
+      font-size: 13px;
+      color: #276B35;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .radius-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .radius-value {
+      color: var(--gold-dark);
+      font-weight: 700;
+    }
+
+    .radius-scale {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 850px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      main {
+        margin-top: 25px;
+      }
+
+      .panel,
+      .editor-card,
+      .settings-card {
+        padding: 18px;
+      }
+
+      .steps {
+        gap: 6px;
+      }
+
+      .step-line {
+        width: 20px;
+      }
+
+      .step {
+        font-size: 10px;
+      }
+
+      .step-number {
+        width: 24px;
+        height: 24px;
+      }
+
+      .coordinates {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        GELF Pledge Card
+        <small>Photo Generator</small>
+      </div>
+
+      <button id="adminLinkTrigger" class="admin-trigger">
+        Admin
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- PUBLIC VIEW -->
+
+    <section id="publicView" class="public-wrap">
+
+      <div class="hero">
+        <h1>Create Your Pledge Card</h1>
+
+        <p>
+          Upload your photo and create your personalized pledge card.
+          
+        </p>
+      </div>
+
+      <div class="steps">
+
+        <div id="step1" class="step active">
+          <span class="step-number">1</span>
+          Upload
+        </div>
+
+        <div class="step-line"></div>
+
+        <div id="step2" class="step">
+          <span class="step-number">2</span>
+          Preview
+        </div>
+
+        <div class="step-line"></div>
+
+        <div id="step3" class="step">
+          <span class="step-number">3</span>
+          Download
+        </div>
+
+      </div>
+
+
+      <div id="panelUnavailable" class="panel unavailable hidden">
+
+        <div class="unavailable-icon">
+          ✦
+        </div>
+
+        <h2 class="panel-title">
+          Coming soon
+        </h2>
+
+        <p class="panel-description">
+          Your pledge-card template is not yet available.
+          Please check again once the organizer publishes it.
+        </p>
+
+      </div>
+
+
+      <div id="panelUpload" class="panel hidden">
+
+        <h2 class="panel-title">
+          Upload your photo
+        </h2>
+
+        <p class="panel-description">
+          Choose a clear JPG, PNG or WEBP photo. Maximum file size is 10 MB.
+        </p>
+
+        <div id="dropzone" class="dropzone">
+
+          <div class="upload-icon">
+            ↑
+          </div>
+
+          <h3>
+            Drop your photo here
+          </h3>
+
+          <p>
+            or select a photo from your device
+          </p>
+
+          <button id="btnChoosePhoto" class="btn btn-primary">
+            Choose Photo
+          </button>
+
+          <input
+            id="fileInput"
+            class="file-input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+          />
+
+        </div>
+
+
+        <div id="thumbRow" class="thumb-row hidden">
+
+          <img id="thumbImg" alt="Selected photo">
+
+          <div class="thumb-info">
+
+            <div id="thumbName" class="thumb-name"></div>
+
+            <div id="thumbSize" class="thumb-size"></div>
+
+          </div>
+
+        </div>
+
+
+        <div id="uploadError" class="error hidden"></div>
+
+
+        <div id="uploadActions" class="actions hidden">
+
+          <button id="btnReplace" class="btn btn-outline">
+            Replace Photo
+          </button>
+
+          <button id="btnGenerate" class="btn btn-gold">
+            Generate Card
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div id="panelGenerating" class="panel generating hidden">
+
+        <div class="spinner"></div>
+
+        <h2 class="panel-title">
+          Creating your card
+        </h2>
+
+        <p class="panel-description">
+          Your photo is being placed into the pledge-card design.
+        </p>
+
+      </div>
+
+
+      <div id="panelResult" class="panel result hidden">
+
+        <h2 class="panel-title">
+          Your pledge card is ready
+        </h2>
+
+        <p class="panel-description">
+          Download your finished card to your device.
+        </p>
+
+        <div class="result-canvas-wrap">
+          <canvas id="resultCanvas"></canvas>
+        </div>
+
+        <div class="actions">
+
+          <button id="btnAnother" class="btn btn-outline">
+            Use Another Photo
+          </button>
+
+          <button id="btnDownload" class="btn btn-gold">
+            Download Card
+          </button>
+
+        </div>
+
+        <div id="downloadFallbackHint" class="note hidden">
+          If the download does not start automatically, right-click the
+          image and choose "Save image as".
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ADMIN VIEW -->
+
+    <section id="adminView" class="admin-wrap hidden">
+
+      <div id="adminLogin" class="login-card panel">
+
+        <div class="hero">
+
+          <h1 class="admin-title">
+            Admin
+          </h1>
+
+          <p class="panel-description">
+            Sign in to manage the pledge-card template.
+          </p>
+
+        </div>
+
+        <div class="field">
+
+          <label for="adminPassword">
+            Password
+          </label>
+
+          <input
+            id="adminPassword"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Enter your admin password"
+          />
+
+        </div>
+
+        <button
+          id="btnLogin"
+          class="btn btn-primary"
+          style="width:100%;"
+        >
+          Sign In
+        </button>
+
+        <div id="loginError" class="error hidden"></div>
+
+      </div>
+
+
+      <div id="adminEditor" class="hidden">
+
+        <div class="admin-top">
+
+          <div>
+
+            <h1 class="admin-title">
+              Pledge Card Template
+            </h1>
+
+            <div class="status-row">
+
+              <span
+                id="templateStatusBadge"
+                class="status-badge"
+              >
+                Not Published
+              </span>
+
+              <span
+                id="templateStatusText"
+                class="note"
+                style="margin:0;"
+              >
+                No template loaded
+              </span>
+
+            </div>
+
+          </div>
+
+          <button
+            id="adminLogout"
+            class="btn btn-outline"
+          >
+            Sign Out
+          </button>
+
+        </div>
+
+
+        <div class="admin-grid">
+
+
+          <!-- EDITOR -->
+
+          <div class="editor-card">
+
+            <h2 class="editor-title">
+              Template
+            </h2>
+
+            <p class="editor-description">
+              Upload the pledge-card design, then drag and resize
+              the highlighted photo area. The corner radius changes
+              live while you adjust it.
+            </p>
+
+
+            <div
+              id="templateDropzone"
+              class="dropzone"
+            >
+
+              <div class="upload-icon">
+                ↑
+              </div>
+
+              <h3>
+                Upload pledge-card design
+              </h3>
+
+              <p>
+                JPG, PNG or WEBP. The image will be optimized for web use.
+              </p>
+
+              <button
+                id="btnChooseTemplate"
+                class="btn btn-primary"
+              >
+                Choose Template
+              </button>
+
+              <input
+                id="templateFileInput"
+                class="file-input"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+              />
+
+            </div>
+
+
+            <div
+              id="templateError"
+              class="error hidden"
+            ></div>
+
+
+            <div
+              id="editorBody"
+              class="hidden"
+            >
+
+              <div
+                id="editorCanvasWrap"
+                class="editor-canvas-wrap"
+              >
+
+                <img
+                  id="editorImg"
+                  alt="Pledge-card template"
+                >
+
+                <div id="areaBox">
+
+                  <div id="areaHandle"></div>
+
+                </div>
+
+              </div>
+
+
+              <div class="coordinates">
+
+                <div class="field">
+                  <label for="numX">
+                    X (%)
+                  </label>
+
+                  <input
+                    id="numX"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                  >
+                </div>
+
+
+                <div class="field">
+                  <label for="numY">
+                    Y (%)
+                  </label>
+
+                  <input
+                    id="numY"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                  >
+                </div>
+
+
+                <div class="field">
+                  <label for="numW">
+                    Width (%)
+                  </label>
+
+                  <input
+                    id="numW"
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="0.1"
+                  >
+                </div>
+
+
+                <div class="field">
+                  <label for="numH">
+                    Height (%)
+                  </label>
+
+                  <input
+                    id="numH"
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="0.1"
+                  >
+                </div>
+
+              </div>
+
+
+              <div class="sample-frame">
+
+                <h4>
+                  Sample Preview
+                </h4>
+
+                <canvas id="sampleCanvas"></canvas>
+
+              </div>
+
+
+              <div class="actions">
+
+                <button
+                  id="btnPreviewSample"
+                  class="btn btn-outline"
+                >
+                  Preview
+                </button>
+
+                <button
+                  id="btnPublish"
+                  class="btn btn-gold"
+                >
+                  Save & Publish
+                </button>
+
+                <button
+                  id="btnUnpublish"
+                  class="btn btn-outline"
+                >
+                  Unpublish
+                </button>
+
+                <button
+                  id="btnDeleteTemplate"
+                  class="btn btn-danger"
+                >
+                  Delete
+                </button>
+
+              </div>
+
+
+              <div
+                id="adminSaveMsg"
+                class="admin-save"
+              ></div>
+
+            </div>
+
+          </div>
+
+
+          <!-- SETTINGS -->
+
+          <div class="settings-card">
+
+            <h2 class="settings-title">
+              Photo Settings
+            </h2>
+
+            <p class="editor-description">
+              Adjust the photo shape and watch the highlighted
+              area change instantly on the card.
+            </p>
+
+
+            <div class="field">
+
+              <label for="shapeSelect">
+                Photo Shape
+              </label>
+
+              <select id="shapeSelect">
+
+                <option value="rect">
+                  Rectangle
+                </option>
+
+                <option value="circle">
+                  Circle
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="field">
+
+              <div class="radius-header">
+
+                <label
+                  for="radiusRange"
+                  style="margin:0;"
+                >
+                  Corner Radius
+                </label>
+
+                <span
+                  id="radiusValue"
+                  class="radius-value"
+                >
+                  18%
+                </span>
+
+              </div>
+
+
+              <input
+                id="radiusRange"
+                type="range"
+                min="0"
+                max="50"
+                value="18"
+                step="0.5"
+              />
+
+
+              <div class="radius-scale">
+
+                <span>
+                  0%
+                </span>
+
+                <span>
+                  50%
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="fitSelect">
+                Photo Fit
+              </label>
+
+              <select id="fitSelect">
+
+                <option value="cover">
+                  Cover — fill area
+                </option>
+
+                <option value="contain">
+                  Contain — show whole photo
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="note">
+
+              <strong>Live Radius:</strong>
+              Move the slider and the highlighted photo
+              area changes immediately.
+
+              <br><br>
+
+              For your Canva design, start around
+              <strong>10–25%</strong> and adjust until the
+              top-left and top-right curves match the design.
+
+              <br><br>
+
+              The bottom-left and bottom-right corners remain
+              square for the rectangle shape.
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="config.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+/* ============================================================
+   SUPABASE CONFIGURATION
+   ============================================================ */
+
+const SUPABASE_URL =
+  window.SUPABASE_URL;
+
+const SUPABASE_ANON_KEY =
+  window.SUPABASE_ANON_KEY;
+
+const ADMIN_EMAIL =
+  "msremmurd@gmail.com";
+
+
+/* ============================================================
+   SUPABASE INITIALIZATION
+   ============================================================ */
+
+const {
+  createClient
+} = window.supabase;
+
+const supabaseClient =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+
+const TEMPLATE_TABLE =
+  "templates";
+
+const TEMPLATE_BUCKET =
+  "pledge-templates";
+
+const MAX_UPLOAD_BYTES =
+  10 * 1024 * 1024;
+
+const MAX_TEMPLATE_DIMENSION =
+  1600;
+
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+let currentTemplate = null;
+
+let selectedPhoto = null;
+
+let selectedPhotoUrl = null;
+
+let adminSession = null;
+
+let editorImageBlob = null;
+
+let editorImageUrl = null;
+
+let editorImageWidth = 0;
+
+let editorImageHeight = 0;
+
+let area = {
+  xPct: 25,
+  yPct: 20,
+  wPct: 50,
+  hPct: 60
+};
+
+let draggingArea = false;
+
+let resizingArea = false;
+
+let dragStart = null;
+
+
+/* ============================================================
+   DOM HELPER
+   ============================================================ */
+
+const $ =
+  (id) =>
+    document.getElementById(id);
+
+
+/* ============================================================
+   ROUTING
+   ============================================================ */
+
+function isAdminRoute() {
+
+  return (
+    location.hash.toLowerCase() ===
+    "#admin"
+  );
+
+}
+
+
+window.addEventListener(
+  "hashchange",
+  renderRoute
+);
+
+
+/* ============================================================
+   DATABASE TEMPLATE
+   ============================================================ */
+
+async function loadPublishedTemplate() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from(TEMPLATE_TABLE)
+      .select("*")
+      .eq("published", true)
+      .order(
+        "updated_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Template load error:",
+      error
+    );
+
+    return null;
+
+  }
+
+
+  if (!data) {
+
+    return null;
+
+  }
+
+
+  return databaseRowToTemplate(
+    data
+  );
+
+}
+
+
+function databaseRowToTemplate(
+  row
+) {
+
+  return {
+
+    id:
+      row.id,
+
+    storagePath:
+      row.storage_path || null,
+
+    bg:
+      row.image_url,
+
+    width:
+      Number(row.width),
+
+    height:
+      Number(row.height),
+
+    area: {
+
+      xPct:
+        Number(row.photo_x),
+
+      yPct:
+        Number(row.photo_y),
+
+      wPct:
+        Number(row.photo_width),
+
+      hPct:
+        Number(row.photo_height)
+
+    },
+
+    shape:
+      row.photo_shape ||
+      "rect",
+
+    radiusPct:
+      Number(
+        row.photo_radius ??
+        18
+      ),
+
+    fit:
+      row.photo_fit ||
+      "cover",
+
+    published:
+      !!row.published
+
+  };
+
+}
+
+
+/* ============================================================
+   PUBLIC VIEW
+   ============================================================ */
+
+async function setupPublicView() {
+
+  $("panelUnavailable")
+    .classList.add("hidden");
+
+  $("panelUpload")
+    .classList.add("hidden");
+
+  $("panelGenerating")
+    .classList.add("hidden");
+
+  $("panelResult")
+    .classList.add("hidden");
+
+
+  currentTemplate =
+    await loadPublishedTemplate();
+
+
+  if (!currentTemplate) {
+
+    $("panelUnavailable")
+      .classList.remove("hidden");
+
+    setPublicStep(1);
+
+    return;
+
+  }
+
+
+  $("panelUpload")
+    .classList.remove("hidden");
+
+  setPublicStep(1);
+
+}
+
+
+function setPublicStep(step) {
+
+  [
+    $("step1"),
+    $("step2"),
+    $("step3")
+  ].forEach(
+    (element, index) => {
+
+      element.classList.toggle(
+        "active",
+        index + 1 === step
+      );
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   IMAGE VALIDATION
+   ============================================================ */
+
+function validateImageSignature(
+  file
+) {
+
+  return new Promise(
+    (resolve) => {
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+
+        try {
+
+          const bytes =
+            new Uint8Array(
+              reader.result
+            );
+
+
+          const jpeg =
+            bytes.length >= 3 &&
+            bytes[0] === 0xFF &&
+            bytes[1] === 0xD8 &&
+            bytes[2] === 0xFF;
+
+
+          const png =
+            bytes.length >= 8 &&
+            bytes[0] === 0x89 &&
+            bytes[1] === 0x50 &&
+            bytes[2] === 0x4E &&
+            bytes[3] === 0x47 &&
+            bytes[4] === 0x0D &&
+            bytes[5] === 0x0A &&
+            bytes[6] === 0x1A &&
+            bytes[7] === 0x0A;
+
+
+          const webp =
+            bytes.length >= 12 &&
+            bytes[0] === 0x52 &&
+            bytes[1] === 0x49 &&
+            bytes[2] === 0x46 &&
+            bytes[3] === 0x46 &&
+            bytes[8] === 0x57 &&
+            bytes[9] === 0x45 &&
+            bytes[10] === 0x42 &&
+            bytes[11] === 0x50;
+
+
+          resolve(
+            jpeg ||
+            png ||
+            webp
+          );
+
+        } catch {
+
+          resolve(false);
+
+        }
+
+      };
+
+
+      reader.onerror =
+        () => resolve(false);
+
+      reader.readAsArrayBuffer(
+        file.slice(0, 16)
+      );
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   PHOTO UPLOAD
+   ============================================================ */
+
+async function handlePhotoFile(
+  file
+) {
+
+  clearUploadError();
+
+
+  if (!file) {
+
+    return;
+
+  }
+
+
+  if (
+    file.size >
+    MAX_UPLOAD_BYTES
+  ) {
+
+    showUploadError(
+      "This photo is larger than 10 MB."
+    );
+
+    return;
+
+  }
+
+
+  const valid =
+    await validateImageSignature(
+      file
+    );
+
+
+  if (!valid) {
+
+    showUploadError(
+      "The selected file does not appear to be a valid JPG, PNG or WEBP image."
+    );
+
+    return;
+
+  }
+
+
+  selectedPhoto =
+    file;
+
+
+  if (selectedPhotoUrl) {
+
+    URL.revokeObjectURL(
+      selectedPhotoUrl
+    );
+
+  }
+
+
+  selectedPhotoUrl =
+    URL.createObjectURL(
+      file
+    );
+
+
+  $("thumbImg").src =
+    selectedPhotoUrl;
+
+  $("thumbName").textContent =
+    file.name;
+
+  $("thumbSize").textContent =
+    formatBytes(file.size);
+
+
+  $("thumbRow")
+    .classList.remove("hidden");
+
+  $("uploadActions")
+    .classList.remove("hidden");
+
+}
+
+
+function clearUploadError() {
+
+  $("uploadError")
+    .classList.add("hidden");
+
+  $("uploadError").textContent =
+    "";
+
+}
+
+
+function showUploadError(
+  message
+) {
+
+  $("uploadError").textContent =
+    message;
+
+  $("uploadError")
+    .classList.remove("hidden");
+
+}
+
+
+/* ============================================================
+   GENERATE PUBLIC CARD
+   ============================================================ */
+
+async function generateCard() {
+
+  if (
+    !selectedPhoto ||
+    !currentTemplate
+  ) {
+
+    return;
+
+  }
+
+
+  $("panelUpload")
+    .classList.add("hidden");
+
+  $("panelResult")
+    .classList.add("hidden");
+
+  $("panelGenerating")
+    .classList.remove("hidden");
+
+
+  setPublicStep(2);
+
+
+  try {
+
+    const photoUrl =
+      URL.createObjectURL(
+        selectedPhoto
+      );
+
+
+    const photoImage =
+      await loadImage(
+        photoUrl
+      );
+
+
+    const templateImage =
+      await loadImage(
+        currentTemplate.bg
+      );
+
+
+    const canvas =
+      $("resultCanvas");
+
+
+    canvas.width =
+      currentTemplate.width;
+
+    canvas.height =
+      currentTemplate.height;
+
+
+    const ctx =
+      canvas.getContext("2d");
+
+
+    ctx.clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+
+    ctx.drawImage(
+      templateImage,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+
+    const x =
+      currentTemplate.area.xPct /
+      100 *
+      canvas.width;
+
+    const y =
+      currentTemplate.area.yPct /
+      100 *
+      canvas.height;
+
+    const w =
+      currentTemplate.area.wPct /
+      100 *
+      canvas.width;
+
+    const h =
+      currentTemplate.area.hPct /
+      100 *
+      canvas.height;
+
+
+    ctx.save();
+
+
+    createClipPath(
+      ctx,
+      currentTemplate.shape,
+      x,
+      y,
+      w,
+      h,
+      currentTemplate.radiusPct
+    );
+
+
+    drawImageFitted(
+      ctx,
+      photoImage,
+      x,
+      y,
+      w,
+      h,
+      currentTemplate.fit
+    );
+
+
+    ctx.restore();
+
+
+    URL.revokeObjectURL(
+      photoUrl
+    );
+
+
+    $("panelGenerating")
+      .classList.add("hidden");
+
+    $("panelResult")
+      .classList.remove("hidden");
+
+
+    setPublicStep(3);
+
+
+  } catch (error) {
+
+    console.error(
+      "Card generation failed:",
+      error
+    );
+
+
+    $("panelGenerating")
+      .classList.add("hidden");
+
+    $("panelUpload")
+      .classList.remove("hidden");
+
+
+    setPublicStep(1);
+
+
+    showUploadError(
+      "We could not generate the card. Please try another image."
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   LOAD IMAGE
+   ============================================================ */
+
+function loadImage(src) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const img =
+        new Image();
+
+      img.crossOrigin =
+        "anonymous";
+
+
+      img.onload =
+        () => resolve(img);
+
+      img.onerror =
+        () =>
+          reject(
+            new Error(
+              "Image could not be loaded."
+            )
+          );
+
+
+      img.src =
+        src;
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   DRAW IMAGE FIT
+   ============================================================ */
+
+function drawImageFitted(
+  ctx,
+  img,
+  x,
+  y,
+  w,
+  h,
+  fit
+) {
+
+  const imageRatio =
+    img.width /
+    img.height;
+
+  const boxRatio =
+    w /
+    h;
+
+
+  let drawWidth;
+  let drawHeight;
+
+
+  if (fit === "contain") {
+
+    if (
+      imageRatio >
+      boxRatio
+    ) {
+
+      drawWidth =
+        w;
+
+      drawHeight =
+        w /
+        imageRatio;
+
+    } else {
+
+      drawHeight =
+        h;
+
+      drawWidth =
+        h *
+        imageRatio;
+
+    }
+
+  } else {
+
+    if (
+      imageRatio >
+      boxRatio
+    ) {
+
+      drawHeight =
+        h;
+
+      drawWidth =
+        h *
+        imageRatio;
+
+    } else {
+
+      drawWidth =
+        w;
+
+      drawHeight =
+        w /
+        imageRatio;
+
+    }
+
+  }
+
+
+  const drawX =
+    x +
+    (w - drawWidth) /
+    2;
+
+  const drawY =
+    y +
+    (h - drawHeight) /
+    2;
+
+
+  ctx.drawImage(
+    img,
+    drawX,
+    drawY,
+    drawWidth,
+    drawHeight
+  );
+
+}
+
+
+/* ============================================================
+   CLIPPING
+   ============================================================ */
+
+function createClipPath(
+  ctx,
+  shape,
+  x,
+  y,
+  w,
+  h,
+  radiusPct
+) {
+
+  ctx.beginPath();
+
+
+  if (
+    shape === "circle"
+  ) {
+
+    const radius =
+      Math.min(w, h) /
+      2;
+
+
+    ctx.arc(
+      x + w / 2,
+      y + h / 2,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
+  } else {
+
+    const radius =
+      Math.min(w, h) *
+      (
+        Number(radiusPct) /
+        100
+      );
+
+
+    roundedTopRectPath(
+      ctx,
+      x,
+      y,
+      w,
+      h,
+      radius
+    );
+
+  }
+
+
+  ctx.clip();
+
+}
+
+
+function roundedTopRectPath(
+  ctx,
+  x,
+  y,
+  w,
+  h,
+  r
+) {
+
+  r =
+    Math.min(
+      r,
+      w / 2,
+      h / 2
+    );
+
+
+  ctx.moveTo(
+    x + r,
+    y
+  );
+
+
+  ctx.lineTo(
+    x + w - r,
+    y
+  );
+
+
+  ctx.quadraticCurveTo(
+    x + w,
+    y,
+    x + w,
+    y + r
+  );
+
+
+  ctx.lineTo(
+    x + w,
+    y + h
+  );
+
+
+  ctx.lineTo(
+    x,
+    y + h
+  );
+
+
+  ctx.lineTo(
+    x,
+    y + r
+  );
+
+
+  ctx.quadraticCurveTo(
+    x,
+    y,
+    x + r,
+    y
+  );
+
+
+  ctx.closePath();
+
+}
+
+
+/* ============================================================
+   DOWNLOAD
+   ============================================================ */
+
+function downloadCard() {
+
+  const canvas =
+    $("resultCanvas");
+
+
+  const link =
+    document.createElement("a");
+
+
+  link.download =
+    "pledge-card.png";
+
+
+  link.href =
+    canvas.toDataURL(
+      "image/png"
+    );
+
+
+  document.body.appendChild(
+    link
+  );
+
+
+  link.click();
+
+  link.remove();
+
+}
+
+
+/* ============================================================
+   RESET
+   ============================================================ */
+
+function resetPublicForm() {
+
+  selectedPhoto =
+    null;
+
+
+  if (selectedPhotoUrl) {
+
+    URL.revokeObjectURL(
+      selectedPhotoUrl
+    );
+
+    selectedPhotoUrl =
+      null;
+
+  }
+
+
+  $("fileInput").value =
+    "";
+
+
+  $("thumbImg")
+    .removeAttribute("src");
+
+  $("thumbName")
+    .textContent = "";
+
+  $("thumbSize")
+    .textContent = "";
+
+
+  $("thumbRow")
+    .classList.add("hidden");
+
+  $("uploadActions")
+    .classList.add("hidden");
+
+  $("panelResult")
+    .classList.add("hidden");
+
+  $("panelGenerating")
+    .classList.add("hidden");
+
+  $("panelUpload")
+    .classList.remove("hidden");
+
+
+  clearUploadError();
+
+  setPublicStep(1);
+
+}
+
+
+/* ============================================================
+   ADMIN AUTH
+   ============================================================ */
+
+async function checkAdminSession() {
+
+  const {
+    data
+  } =
+    await supabaseClient.auth
+      .getSession();
+
+
+  adminSession =
+    data.session;
+
+
+  return adminSession;
+
+}
+
+
+async function adminLogin() {
+
+  const password =
+    $("adminPassword").value;
+
+
+  $("loginError")
+    .classList.add("hidden");
+
+
+  if (!password) {
+
+    showLoginError(
+      "Please enter your password."
+    );
+
+    return;
+
+  }
+
+
+  $("btnLogin").disabled =
+    true;
+
+  $("btnLogin").textContent =
+    "Signing in...";
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth
+      .signInWithPassword({
+
+        email:
+          ADMIN_EMAIL,
+
+        password:
+          password
+
+      });
+
+
+  $("btnLogin").disabled =
+    false;
+
+  $("btnLogin").textContent =
+    "Sign In";
+
+
+  if (error) {
+
+    console.error(error);
+
+    showLoginError(
+      "Incorrect password or admin account not found."
+    );
+
+    return;
+
+  }
+
+
+  adminSession =
+    data.session;
+
+
+  $("adminPassword").value =
+    "";
+
+
+  renderAdminEditor();
+
+}
+
+
+function showLoginError(
+  message
+) {
+
+  $("loginError").textContent =
+    message;
+
+  $("loginError")
+    .classList.remove("hidden");
+
+}
+
+
+async function adminLogout() {
+
+  await supabaseClient.auth
+    .signOut();
+
+
+  adminSession =
+    null;
+
+
+  location.hash =
+    "";
+
+
+  renderRoute();
+
+}
+
+
+/* ============================================================
+   ADMIN TEMPLATE
+   ============================================================ */
+
+async function loadAdminTemplate() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from(TEMPLATE_TABLE)
+      .select("*")
+      .order(
+        "updated_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Admin template load error:",
+      error
+    );
+
+    return null;
+
+  }
+
+
+  if (!data) {
+
+    return null;
+
+  }
+
+
+  return databaseRowToTemplate(
+    data
+  );
+
+}
+
+
+/* ============================================================
+   ADMIN EDITOR
+   ============================================================ */
+
+async function renderAdminEditor() {
+
+  $("adminLogin")
+    .classList.add("hidden");
+
+  $("adminEditor")
+    .classList.remove("hidden");
+
+
+  const template =
+    await loadAdminTemplate();
+
+
+  if (!template) {
+
+    clearAdminEditor();
+
+    updateTemplateStatus(
+      false,
+      "No template has been uploaded yet."
+    );
+
+    return;
+
+  }
+
+
+  currentTemplate =
+    template;
+
+
+  area =
+    {
+      ...template.area
+    };
+
+
+  $("shapeSelect").value =
+    template.shape;
+
+
+  $("radiusRange").value =
+    template.radiusPct;
+
+
+  $("radiusValue").textContent =
+    `${template.radiusPct}%`;
+
+
+  $("fitSelect").value =
+    template.fit;
+
+
+  await loadEditorImage(
+    template.bg
+  );
+
+
+  updateTemplateStatus(
+    template.published,
+    template.published
+      ? "Template is live."
+      : "Template is saved but unpublished."
+  );
+
+
+  drawAreaBox();
+
+}
+
+
+/* ============================================================
+   CLEAR ADMIN EDITOR
+   ============================================================ */
+
+function clearAdminEditor() {
+
+  $("editorBody")
+    .classList.add("hidden");
+
+
+  $("editorImg")
+    .removeAttribute("src");
+
+
+  currentTemplate =
+    null;
+
+
+  editorImageBlob =
+    null;
+
+
+  if (editorImageUrl) {
+
+    URL.revokeObjectURL(
+      editorImageUrl
+    );
+
+    editorImageUrl =
+      null;
+
+  }
+
+}
+
+
+/* ============================================================
+   TEMPLATE UPLOAD
+   ============================================================ */
+
+async function handleTemplateFile(
+  file
+) {
+
+  clearTemplateError();
+
+
+  if (!file) {
+
+    return;
+
+  }
+
+
+  if (
+    file.size >
+    MAX_UPLOAD_BYTES * 2
+  ) {
+
+    showTemplateError(
+      "The template file is too large."
+    );
+
+    return;
+
+  }
+
+
+  const valid =
+    await validateImageSignature(
+      file
+    );
+
+
+  if (!valid) {
+
+    showTemplateError(
+      "Please select a valid JPG, PNG or WEBP image."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const result =
+      await optimizeTemplateImage(
+        file
+      );
+
+
+    editorImageBlob =
+      result.blob;
+
+
+    if (editorImageUrl) {
+
+      URL.revokeObjectURL(
+        editorImageUrl
+      );
+
+    }
+
+
+    editorImageUrl =
+      URL.createObjectURL(
+        result.blob
+      );
+
+
+    editorImageWidth =
+      result.width;
+
+    editorImageHeight =
+      result.height;
+
+
+    area = {
+
+      xPct: 25,
+      yPct: 20,
+      wPct: 50,
+      hPct: 60
+
+    };
+
+
+    currentTemplate = {
+
+      id: null,
+
+      storagePath: null,
+
+      bg:
+        editorImageUrl,
+
+      width:
+        result.width,
+
+      height:
+        result.height,
+
+      area:
+        {
+          ...area
+        },
+
+      shape:
+        $("shapeSelect").value,
+
+      radiusPct:
+        Number(
+          $("radiusRange").value
+        ),
+
+      fit:
+        $("fitSelect").value,
+
+      published:
+        false
+
+    };
+
+
+    $("editorBody")
+      .classList.remove("hidden");
+
+
+    $("editorImg").src =
+      editorImageUrl;
+
+
+    $("editorImg").onload =
+      () => {
+
+        drawAreaBox();
+
+        drawSamplePreview();
+
+      };
+
+
+    updateCoordinateInputs();
+
+    drawAreaBox();
+
+    drawSamplePreview();
+
+
+    updateTemplateStatus(
+      false,
+      "New template ready to publish."
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showTemplateError(
+      "Could not process this template image."
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   OPTIMIZE TEMPLATE
+   ============================================================ */
+
+function optimizeTemplateImage(
+  file
+) {
+
+  return new Promise(
+    async (resolve, reject) => {
+
+      try {
+
+        const url =
+          URL.createObjectURL(
+            file
+          );
+
+
+        const img =
+          await loadImage(url);
+
+
+        URL.revokeObjectURL(url);
+
+
+        let width =
+          img.width;
+
+        let height =
+          img.height;
+
+
+        const scale =
+          Math.min(
+            1,
+            MAX_TEMPLATE_DIMENSION /
+              Math.max(
+                width,
+                height
+              )
+          );
+
+
+        width =
+          Math.round(
+            width * scale
+          );
+
+        height =
+          Math.round(
+            height * scale
+          );
+
+
+        const canvas =
+          document.createElement(
+            "canvas"
+          );
+
+
+        canvas.width =
+          width;
+
+        canvas.height =
+          height;
+
+
+        const ctx =
+          canvas.getContext("2d");
+
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          width,
+          height
+        );
+
+
+        let blob =
+          await canvasToBlob(
+            canvas,
+            "image/png"
+          );
+
+
+        if (
+          blob.size >
+          8 * 1024 * 1024
+        ) {
+
+          blob =
+            await canvasToBlob(
+              canvas,
+              "image/jpeg",
+              0.92
+            );
+
+        }
+
+
+        resolve({
+
+          blob,
+          width,
+          height
+
+        });
+
+
+      } catch (error) {
+
+        reject(error);
+
+      }
+
+    }
+  );
+
+}
+
+
+function canvasToBlob(
+  canvas,
+  type,
+  quality
+) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      canvas.toBlob(
+        (blob) => {
+
+          if (!blob) {
+
+            reject(
+              new Error(
+                "Could not create image blob."
+              )
+            );
+
+            return;
+
+          }
+
+          resolve(blob);
+
+        },
+        type,
+        quality
+      );
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   LOAD EDITOR IMAGE
+   ============================================================ */
+
+async function loadEditorImage(
+  src
+) {
+
+  $("editorBody")
+    .classList.remove("hidden");
+
+
+  $("editorImg").src =
+    src;
+
+
+  await new Promise(
+    (resolve, reject) => {
+
+      const img =
+        $("editorImg");
+
+
+      if (
+        img.complete &&
+        img.naturalWidth
+      ) {
+
+        resolve();
+
+        return;
+
+      }
+
+
+      img.onload =
+        resolve;
+
+      img.onerror =
+        reject;
+
+    }
+  );
+
+
+  editorImageWidth =
+    $("editorImg").naturalWidth;
+
+  editorImageHeight =
+    $("editorImg").naturalHeight;
+
+
+  updateCoordinateInputs();
+
+  drawAreaBox();
+
+  drawSamplePreview();
+
+}
+
+
+/* ============================================================
+   LIVE AREA BOX
+   ============================================================ */
+
+function drawAreaBox() {
+
+  const img =
+    $("editorImg");
+
+  const box =
+    $("areaBox");
+
+
+  if (
+    !img ||
+    !img.naturalWidth
+  ) {
+
+    return;
+
+  }
+
+
+  const rect =
+    img.getBoundingClientRect();
+
+
+  const x =
+    area.xPct /
+    100 *
+    rect.width;
+
+
+  const y =
+    area.yPct /
+    100 *
+    rect.height;
+
+
+  const w =
+    area.wPct /
+    100 *
+    rect.width;
+
+
+  const h =
+    area.hPct /
+    100 *
+    rect.height;
+
+
+  box.style.left =
+    (
+      img.offsetLeft +
+      x
+    ) + "px";
+
+
+  box.style.top =
+    (
+      img.offsetTop +
+      y
+    ) + "px";
+
+
+  box.style.width =
+    w + "px";
+
+
+  box.style.height =
+    h + "px";
+
+
+  const shape =
+    $("shapeSelect").value;
+
+
+  const radiusPercent =
+    Number(
+      $("radiusRange").value
+    ) || 0;
+
+
+  if (
+    shape === "circle"
+  ) {
+
+    box.style.borderRadius =
+      "50%";
+
+  } else {
+
+    const radius =
+      Math.min(
+        w,
+        h
+      ) *
+      (
+        radiusPercent /
+        100
+      );
+
+
+    box.style.borderRadius =
+      `${radius}px ${radius}px 0 0`;
+
+  }
+
+
+  $("radiusValue").textContent =
+    `${radiusPercent}%`;
+
+
+  updateCoordinateInputs();
+
+}
+
+
+/* ============================================================
+   COORDINATES
+   ============================================================ */
+
+function updateCoordinateInputs() {
+
+  $("numX").value =
+    Number(
+      area.xPct
+    ).toFixed(1);
+
+  $("numY").value =
+    Number(
+      area.yPct
+    ).toFixed(1);
+
+  $("numW").value =
+    Number(
+      area.wPct
+    ).toFixed(1);
+
+  $("numH").value =
+    Number(
+      area.hPct
+    ).toFixed(1);
+
+}
+
+
+function updateAreaFromInputs() {
+
+  area.xPct =
+    clamp(
+      Number(
+        $("numX").value
+      ) || 0,
+      0,
+      100
+    );
+
+
+  area.yPct =
+    clamp(
+      Number(
+        $("numY").value
+      ) || 0,
+      0,
+      100
+    );
+
+
+  area.wPct =
+    clamp(
+      Number(
+        $("numW").value
+      ) || 1,
+      1,
+      100
+    );
+
+
+  area.hPct =
+    clamp(
+      Number(
+        $("numH").value
+      ) || 1,
+      1,
+      100
+    );
+
+
+  clampArea();
+
+  drawAreaBox();
+
+  drawSamplePreview();
+
+}
+
+
+function clampArea() {
+
+  area.wPct =
+    clamp(
+      area.wPct,
+      1,
+      100
+    );
+
+
+  area.hPct =
+    clamp(
+      area.hPct,
+      1,
+      100
+    );
+
+
+  area.xPct =
+    clamp(
+      area.xPct,
+      0,
+      100 -
+      area.wPct
+    );
+
+
+  area.yPct =
+    clamp(
+      area.yPct,
+      0,
+      100 -
+      area.hPct
+    );
+
+}
+
+
+function clamp(
+  value,
+  min,
+  max
+) {
+
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+
+}
+
+
+/* ============================================================
+   POINTER POSITION
+   ============================================================ */
+
+function pointerPosition(
+  event
+) {
+
+  const img =
+    $("editorImg");
+
+
+  const rect =
+    img.getBoundingClientRect();
+
+
+  return {
+
+    x:
+      event.clientX -
+      rect.left,
+
+    y:
+      event.clientY -
+      rect.top,
+
+    width:
+      rect.width,
+
+    height:
+      rect.height
+
+  };
+
+}
+
+
+/* ============================================================
+   DRAG AREA
+   ============================================================ */
+
+function startAreaDrag(
+  event
+) {
+
+  if (
+    event.target ===
+    $("areaHandle")
+  ) {
+
+    return;
+
+  }
+
+
+  const pos =
+    pointerPosition(event);
+
+
+  draggingArea =
+    true;
+
+
+  dragStart = {
+
+    x:
+      pos.x,
+
+    y:
+      pos.y,
+
+    areaX:
+      area.xPct,
+
+    areaY:
+      area.yPct
+
+  };
+
+
+  $("areaBox")
+    .setPointerCapture(
+      event.pointerId
+    );
+
+}
+
+
+function moveAreaDrag(
+  event
+) {
+
+  if (
+    !draggingArea ||
+    !dragStart
+  ) {
+
+    return;
+
+  }
+
+
+  const pos =
+    pointerPosition(event);
+
+
+  const dx =
+    (
+      pos.x -
+      dragStart.x
+    ) /
+    pos.width *
+    100;
+
+
+  const dy =
+    (
+      pos.y -
+      dragStart.y
+    ) /
+    pos.height *
+    100;
+
+
+  area.xPct =
+    dragStart.areaX +
+    dx;
+
+
+  area.yPct =
+    dragStart.areaY +
+    dy;
+
+
+  clampArea();
+
+  drawAreaBox();
+
+  drawSamplePreview();
+
+}
+
+
+function endAreaDrag() {
+
+  draggingArea =
+    false;
+
+  dragStart =
+    null;
+
+}
+
+
+/* ============================================================
+   RESIZE
+   ============================================================ */
+
+function startAreaResize(
+  event
+) {
+
+  event.stopPropagation();
+
+
+  const pos =
+    pointerPosition(event);
+
+
+  resizingArea =
+    true;
+
+
+  dragStart = {
+
+    x:
+      pos.x,
+
+    y:
+      pos.y,
+
+    width:
+      area.wPct,
+
+    height:
+      area.hPct
+
+  };
+
+
+  $("areaHandle")
+    .setPointerCapture(
+      event.pointerId
+    );
+
+}
+
+
+function moveAreaResize(
+  event
+) {
+
+  if (
+    !resizingArea ||
+    !dragStart
+  ) {
+
+    return;
+
+  }
+
+
+  const pos =
+    pointerPosition(event);
+
+
+  const dx =
+    (
+      pos.x -
+      dragStart.x
+    ) /
+    pos.width *
+    100;
+
+
+  const dy =
+    (
+      pos.y -
+      dragStart.y
+    ) /
+    pos.height *
+    100;
+
+
+  area.wPct =
+    dragStart.width +
+    dx;
+
+
+  area.hPct =
+    dragStart.height +
+    dy;
+
+
+  if (
+    $("shapeSelect").value ===
+    "circle"
+  ) {
+
+    const size =
+      Math.max(
+        area.wPct,
+        area.hPct
+      );
+
+
+    area.wPct =
+      size;
+
+    area.hPct =
+      size;
+
+  }
+
+
+  clampArea();
+
+  drawAreaBox();
+
+  drawSamplePreview();
+
+}
+
+
+function endAreaResize() {
+
+  resizingArea =
+    false;
+
+  dragStart =
+    null;
+
+}
+
+
+/* ============================================================
+   SAMPLE PREVIEW
+   ============================================================ */
+
+async function drawSamplePreview() {
+
+  if (
+    !currentTemplate ||
+    !currentTemplate.bg
+  ) {
+
+    return;
+
+  }
+
+
+  const canvas =
+    $("sampleCanvas");
+
+
+  const maxWidth =
+    500;
+
+
+  const scale =
+    Math.min(
+      1,
+      maxWidth /
+      currentTemplate.width
+    );
+
+
+  canvas.width =
+    Math.round(
+      currentTemplate.width *
+      scale
+    );
+
+
+  canvas.height =
+    Math.round(
+      currentTemplate.height *
+      scale
+    );
+
+
+  const ctx =
+    canvas.getContext("2d");
+
+
+  const templateImg =
+    await loadImage(
+      currentTemplate.bg
+    );
+
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  ctx.drawImage(
+    templateImg,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  const sample =
+    document.createElement(
+      "canvas"
+    );
+
+
+  sample.width =
+    800;
+
+  sample.height =
+    1000;
+
+
+  const sampleCtx =
+    sample.getContext("2d");
+
+
+  sampleCtx.fillStyle =
+    "#D8B99A";
+
+  sampleCtx.fillRect(
+    0,
+    0,
+    sample.width,
+    sample.height
+  );
+
+
+  sampleCtx.fillStyle =
+    "#5C3926";
+
+  sampleCtx.beginPath();
+
+  sampleCtx.arc(
+    400,
+    360,
+    180,
+    0,
+    Math.PI * 2
+  );
+
+  sampleCtx.fill();
+
+
+  sampleCtx.fillStyle =
+    "#24180F";
+
+  sampleCtx.beginPath();
+
+  sampleCtx.arc(
+    400,
+    330,
+    135,
+    Math.PI,
+    Math.PI * 2
+  );
+
+  sampleCtx.fill();
+
+
+  sampleCtx.fillStyle =
+    "#7A4B31";
+
+  sampleCtx.fillRect(
+    180,
+    540,
+    440,
+    460
+  );
+
+
+  const x =
+    area.xPct /
+    100 *
+    canvas.width;
+
+
+  const y =
+    area.yPct /
+    100 *
+    canvas.height;
+
+
+  const w =
+    area.wPct /
+    100 *
+    canvas.width;
+
+
+  const h =
+    area.hPct /
+    100 *
+    canvas.height;
+
+
+  ctx.save();
+
+
+  createClipPath(
+    ctx,
+    $("shapeSelect").value,
+    x,
+    y,
+    w,
+    h,
+    Number(
+      $("radiusRange").value
+    )
+  );
+
+
+  drawImageFitted(
+    ctx,
+    sample,
+    x,
+    y,
+    w,
+    h,
+    $("fitSelect").value
+  );
+
+
+  ctx.restore();
+
+}
+
+
+/* ============================================================
+   PUBLISH
+   ============================================================ */
+
+async function publishTemplate() {
+
+  if (
+    !editorImageBlob ||
+    !currentTemplate
+  ) {
+
+    showAdminMessage(
+      "Please upload a template first.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  $("btnPublish").disabled =
+    true;
+
+  $("btnPublish").textContent =
+    "Publishing...";
+
+
+  try {
+
+    const extension =
+      editorImageBlob.type ===
+      "image/png"
+        ? "png"
+        : "jpg";
+
+
+    const storagePath =
+      "template-" +
+      Date.now() +
+      "." +
+      extension;
+
+
+    const {
+      error:
+        uploadError
+    } =
+      await supabaseClient
+        .storage
+        .from(
+          TEMPLATE_BUCKET
+        )
+        .upload(
+          storagePath,
+          editorImageBlob,
+          {
+            contentType:
+              editorImageBlob.type,
+
+            upsert:
+              false
+          }
+        );
+
+
+    if (uploadError) {
+
+      throw uploadError;
+
+    }
+
+
+    const {
+      data:
+        publicData
+    } =
+      supabaseClient
+        .storage
+        .from(
+          TEMPLATE_BUCKET
+        )
+        .getPublicUrl(
+          storagePath
+        );
+
+
+    const imageUrl =
+      publicData.publicUrl;
+
+
+    const row = {
+
+      id:
+        currentTemplate.id ||
+        1,
+
+      name:
+        "Pledge Card",
+
+      image_url:
+        imageUrl,
+
+      storage_path:
+        storagePath,
+
+      width:
+        currentTemplate.width,
+
+      height:
+        currentTemplate.height,
+
+      photo_x:
+        area.xPct,
+
+      photo_y:
+        area.yPct,
+
+      photo_width:
+        area.wPct,
+
+      photo_height:
+        area.hPct,
+
+      photo_shape:
+        $("shapeSelect").value,
+
+      photo_radius:
+        Number(
+          $("radiusRange").value
+        ),
+
+      photo_fit:
+        $("fitSelect").value,
+
+      published:
+        true,
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from(
+          TEMPLATE_TABLE
+        )
+        .upsert(
+          row,
+          {
+            onConflict:
+              "id"
+          }
+        )
+        .select()
+        .single();
+
+
+    if (error) {
+
+      await supabaseClient
+        .storage
+        .from(
+          TEMPLATE_BUCKET
+        )
+        .remove([
+          storagePath
+        ]);
+
+
+      throw error;
+
+    }
+
+
+    const oldPath =
+      currentTemplate.storagePath;
+
+
+    if (
+      oldPath &&
+      oldPath !== storagePath
+    ) {
+
+      await supabaseClient
+        .storage
+        .from(
+          TEMPLATE_BUCKET
+        )
+        .remove([
+          oldPath
+        ]);
+
+    }
+
+
+    currentTemplate =
+      databaseRowToTemplate(
+        data
+      );
+
+
+    area =
+      {
+        ...currentTemplate.area
+      };
+
+
+    editorImageBlob =
+      null;
+
+
+    if (editorImageUrl) {
+
+      URL.revokeObjectURL(
+        editorImageUrl
+      );
+
+      editorImageUrl =
+        null;
+
+    }
+
+
+    $("editorImg").src =
+      currentTemplate.bg;
+
+
+    $("radiusRange").value =
+      currentTemplate.radiusPct;
+
+
+    $("radiusValue").textContent =
+      `${currentTemplate.radiusPct}%`;
+
+
+    updateTemplateStatus(
+      true,
+      "Template is live and available to the public."
+    );
+
+
+    showAdminMessage(
+      "Template published successfully.",
+      false
+    );
+
+
+    drawAreaBox();
+
+    drawSamplePreview();
+
+
+  } catch (error) {
+
+    console.error(
+      "Publish error:",
+      error
+    );
+
+
+    showAdminMessage(
+      error.message ||
+      "Could not publish the template.",
+      true
+    );
+
+  }
+
+
+  $("btnPublish").disabled =
+    false;
+
+  $("btnPublish").textContent =
+    "Save & Publish";
+
+}
+
+
+/* ============================================================
+   UNPUBLISH
+   ============================================================ */
+
+async function unpublishTemplate() {
+
+  if (
+    !currentTemplate ||
+    !currentTemplate.id
+  ) {
+
+    return;
+
+  }
+
+
+  $("btnUnpublish").disabled =
+    true;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from(
+        TEMPLATE_TABLE
+      )
+      .update({
+
+        published:
+          false,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq(
+        "id",
+        currentTemplate.id
+      );
+
+
+  $("btnUnpublish").disabled =
+    false;
+
+
+  if (error) {
+
+    console.error(error);
+
+    showAdminMessage(
+      "Could not unpublish the template.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  currentTemplate.published =
+    false;
+
+
+  updateTemplateStatus(
+    false,
+    "Template is saved but no longer public."
+  );
+
+
+  showAdminMessage(
+    "Template unpublished.",
+    false
+  );
+
+}
+
+
+/* ============================================================
+   DELETE
+   ============================================================ */
+
+async function deleteTemplate() {
+
+  if (
+    !currentTemplate ||
+    !currentTemplate.id
+  ) {
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      "Delete the pledge-card template? The public page will show 'Coming soon' until another template is published."
+    );
+
+
+  if (!confirmed) {
+
+    return;
+
+  }
+
+
+  $("btnDeleteTemplate").disabled =
+    true;
+
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from(
+          TEMPLATE_TABLE
+        )
+        .delete()
+        .eq(
+          "id",
+          currentTemplate.id
+        );
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    if (
+      currentTemplate.storagePath
+    ) {
+
+      await supabaseClient
+        .storage
+        .from(
+          TEMPLATE_BUCKET
+        )
+        .remove([
+          currentTemplate.storagePath
+        ]);
+
+    }
+
+
+    clearAdminEditor();
+
+
+    updateTemplateStatus(
+      false,
+      "No template has been uploaded."
+    );
+
+
+    showAdminMessage(
+      "Template deleted.",
+      false
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    showAdminMessage(
+      error.message ||
+      "Could not delete the template.",
+      true
+    );
+
+  }
+
+
+  $("btnDeleteTemplate").disabled =
+    false;
+
+}
+
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+function updateTemplateStatus(
+  published,
+  text
+) {
+
+  const badge =
+    $("templateStatusBadge");
+
+
+  badge.textContent =
+    published
+      ? "Published"
+      : "Not Published";
+
+
+  badge.classList.toggle(
+    "published",
+    published
+  );
+
+
+  badge.classList.toggle(
+    "unpublished",
+    !published
+  );
+
+
+  $("templateStatusText").textContent =
+    text;
+
+}
+
+
+function showAdminMessage(
+  message,
+  isError
+) {
+
+  const element =
+    $("adminSaveMsg");
+
+
+  element.textContent =
+    message;
+
+
+  element.style.color =
+    isError
+      ? "var(--error)"
+      : "#276B35";
+
+}
+
+
+/* ============================================================
+   ERRORS
+   ============================================================ */
+
+function clearTemplateError() {
+
+  $("templateError").textContent =
+    "";
+
+  $("templateError")
+    .classList.add("hidden");
+
+}
+
+
+function showTemplateError(
+  message
+) {
+
+  $("templateError").textContent =
+    message;
+
+  $("templateError")
+    .classList.remove("hidden");
+
+}
+
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+
+async function renderRoute() {
+
+  if (
+    isAdminRoute()
+  ) {
+
+    $("publicView")
+      .classList.add("hidden");
+
+    $("adminView")
+      .classList.remove("hidden");
+
+
+    const session =
+      await checkAdminSession();
+
+
+    if (session) {
+
+      renderAdminEditor();
+
+    } else {
+
+      $("adminLogin")
+        .classList.remove("hidden");
+
+      $("adminEditor")
+        .classList.add("hidden");
+
+    }
+
+
+  } else {
+
+    $("adminView")
+      .classList.add("hidden");
+
+    $("publicView")
+      .classList.remove("hidden");
+
+
+    await setupPublicView();
+
+  }
+
+}
+
+
+/* ============================================================
+   FORMAT BYTES
+   ============================================================ */
+
+function formatBytes(
+  bytes
+) {
+
+  if (
+    bytes === 0
+  ) {
+
+    return "0 Bytes";
+
+  }
+
+
+  const units = [
+    "Bytes",
+    "KB",
+    "MB",
+    "GB"
+  ];
+
+
+  const i =
+    Math.floor(
+      Math.log(bytes) /
+      Math.log(1024)
+    );
+
+
+  return (
+    parseFloat(
+      (
+        bytes /
+        Math.pow(
+          1024,
+          i
+        )
+      ).toFixed(1)
+    ) +
+    " " +
+    units[i]
+  );
+
+}
+
+
+/* ============================================================
+   EVENT LISTENERS
+   ============================================================ */
+
+
+/* Admin */
+
+$("adminLinkTrigger")
+  .addEventListener(
+    "click",
+    () => {
+
+      location.hash =
+        "admin";
+
+    }
+  );
+
+
+/* Public photo */
+
+$("btnChoosePhoto")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("fileInput").click();
+
+    }
+  );
+
+
+$("fileInput")
+  .addEventListener(
+    "change",
+    (event) => {
+
+      handlePhotoFile(
+        event.target.files[0]
+      );
+
+    }
+  );
+
+
+/* Public drag/drop */
+
+const dropzone =
+  $("dropzone");
+
+
+dropzone.addEventListener(
+  "dragover",
+  (event) => {
+
+    event.preventDefault();
+
+    dropzone.classList.add(
+      "dragover"
+    );
+
+  }
+);
+
+
+dropzone.addEventListener(
+  "dragleave",
+  () => {
+
+    dropzone.classList.remove(
+      "dragover"
+    );
+
+  }
+);
+
+
+dropzone.addEventListener(
+  "drop",
+  (event) => {
+
+    event.preventDefault();
+
+    dropzone.classList.remove(
+      "dragover"
+    );
+
+
+    handlePhotoFile(
+      event.dataTransfer.files[0]
+    );
+
+  }
+);
+
+
+/* Replace */
+
+$("btnReplace")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("fileInput").click();
+
+    }
+  );
+
+
+/* Generate */
+
+$("btnGenerate")
+  .addEventListener(
+    "click",
+    generateCard
+  );
+
+
+/* Download */
+
+$("btnDownload")
+  .addEventListener(
+    "click",
+    downloadCard
+  );
+
+
+/* Another */
+
+$("btnAnother")
+  .addEventListener(
+    "click",
+    resetPublicForm
+  );
+
+
+/* Login */
+
+$("btnLogin")
+  .addEventListener(
+    "click",
+    adminLogin
+  );
+
+
+$("adminPassword")
+  .addEventListener(
+    "keydown",
+    (event) => {
+
+      if (
+        event.key ===
+        "Enter"
+      ) {
+
+        adminLogin();
+
+      }
+
+    }
+  );
+
+
+/* Logout */
+
+$("adminLogout")
+  .addEventListener(
+    "click",
+    adminLogout
+  );
+
+
+/* Template upload */
+
+$("btnChooseTemplate")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("templateFileInput").click();
+
+    }
+  );
+
+
+$("templateFileInput")
+  .addEventListener(
+    "change",
+    (event) => {
+
+      handleTemplateFile(
+        event.target.files[0]
+      );
+
+    }
+  );
+
+
+/* Template drag/drop */
+
+const templateDropzone =
+  $("templateDropzone");
+
+
+templateDropzone.addEventListener(
+  "dragover",
+  (event) => {
+
+    event.preventDefault();
+
+    templateDropzone.classList.add(
+      "dragover"
+    );
+
+  }
+);
+
+
+templateDropzone.addEventListener(
+  "dragleave",
+  () => {
+
+    templateDropzone.classList.remove(
+      "dragover"
+    );
+
+  }
+);
+
+
+templateDropzone.addEventListener(
+  "drop",
+  (event) => {
+
+    event.preventDefault();
+
+    templateDropzone.classList.remove(
+      "dragover"
+    );
+
+
+    handleTemplateFile(
+      event.dataTransfer.files[0]
+    );
+
+  }
+);
+
+
+/* Area drag */
+
+$("areaBox")
+  .addEventListener(
+    "pointerdown",
+    startAreaDrag
+  );
+
+
+$("areaBox")
+  .addEventListener(
+    "pointermove",
+    moveAreaDrag
+  );
+
+
+$("areaBox")
+  .addEventListener(
+    "pointerup",
+    endAreaDrag
+  );
+
+
+$("areaBox")
+  .addEventListener(
+    "pointercancel",
+    endAreaDrag
+  );
+
+
+/* Area resize */
+
+$("areaHandle")
+  .addEventListener(
+    "pointerdown",
+    startAreaResize
+  );
+
+
+$("areaHandle")
+  .addEventListener(
+    "pointermove",
+    moveAreaResize
+  );
+
+
+$("areaHandle")
+  .addEventListener(
+    "pointerup",
+    endAreaResize
+  );
+
+
+$("areaHandle")
+  .addEventListener(
+    "pointercancel",
+    endAreaResize
+  );
+
+
+/* Coordinates */
+
+[
+  "numX",
+  "numY",
+  "numW",
+  "numH"
+].forEach(
+  (id) => {
+
+    $(id).addEventListener(
+      "input",
+      updateAreaFromInputs
+    );
+
+  }
+);
+
+
+/* Shape */
+
+$("shapeSelect")
+  .addEventListener(
+    "change",
+    () => {
+
+      drawAreaBox();
+
+      drawSamplePreview();
+
+    }
+  );
+
+
+/* ============================================================
+   LIVE RADIUS CONTROL
+   ============================================================ */
+
+$("radiusRange")
+  .addEventListener(
+    "input",
+    () => {
+
+      const value =
+        Number(
+          $("radiusRange").value
+        );
+
+
+      $("radiusValue").textContent =
+        `${value}%`;
+
+
+      /*
+        Immediately update the
+        highlighted rectangle.
+      */
+
+      drawAreaBox();
+
+
+      /*
+        Immediately update the
+        sample card preview.
+      */
+
+      drawSamplePreview();
+
+    }
+  );
+
+
+/* Fit */
+
+$("fitSelect")
+  .addEventListener(
+    "change",
+    () => {
+
+      drawSamplePreview();
+
+    }
+  );
+
+
+/* Preview */
+
+$("btnPreviewSample")
+  .addEventListener(
+    "click",
+    drawSamplePreview
+  );
+
+
+/* Publish */
+
+$("btnPublish")
+  .addEventListener(
+    "click",
+    publishTemplate
+  );
+
+
+/* Unpublish */
+
+$("btnUnpublish")
+  .addEventListener(
+    "click",
+    unpublishTemplate
+  );
+
+
+/* Delete */
+
+$("btnDeleteTemplate")
+  .addEventListener(
+    "click",
+    deleteTemplate
+  );
+
+
+/* Window resize */
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    if (
+      isAdminRoute()
+    ) {
+
+      drawAreaBox();
+
+    }
+
+  }
+);
+
+
+/* ============================================================
+   AUTH STATE
+   ============================================================ */
+
+supabaseClient.auth
+  .onAuthStateChange(
+    (_event, session) => {
+
+      adminSession =
+        session;
+
+    }
+  );
+
+
+/* ============================================================
+   START
+   ============================================================ */
+
+renderRoute();
+
+</script>
+
+</body>
+</html>
+```
